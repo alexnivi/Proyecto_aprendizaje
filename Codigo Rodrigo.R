@@ -106,7 +106,7 @@ rm(list=ls())
 #   validation_steps = n_valida / 500,
 #   steps_per_epoch = n_entrena / 32, # entre tamaño de minibatch 
 #   workers = 4,
-#   epochs = 20, #aumenta el número de épocas
+#   epochs = 20,
 #   verbose = 1)
 # 
 # # Predecimos
@@ -201,7 +201,7 @@ rm(list=ls())
 #   validation_steps = n_valida / 500,
 #   steps_per_epoch = n_entrena / 32, # entre tamaño de minibatch 
 #   workers = 4,
-#   epochs = 20, #aumenta el número de épocas
+#   epochs = 20, 
 #   verbose = 1)
 # 
 # # Predecimos
@@ -221,7 +221,11 @@ rm(list=ls())
 # prediccion<-prediccion[c(2,1)]
 # write.csv(prediccion,"2018-10-16_prediccion_2.csv",row.names=F)
 
-############## Tercer intento, 17-Oct ############## 
+############## Primer intento, 17-Oct ############## 
+
+#carpeta<-paste0("Bases/",Sys.Date())
+carpeta<-paste0("Bases/","2018-10-17")
+dir.create(carpeta)
 
 # Preprocesamiento de imagenes #
 
@@ -295,8 +299,11 @@ ajuste <- modelo %>% fit_generator(
   validation_steps = n_valida / 500,
   steps_per_epoch = n_entrena / 32, # entre tamaño de minibatch 
   workers = 4,
-  epochs = 40, #aumenta el número de épocas
+  epochs = 40, #aumentamos épocas
   verbose = 1)
+
+# Exporta métricas
+write.csv(as.data.frame(ajuste$metrics),paste0(carpeta,"/metricas_1.csv"),row.names=F)
 
 # Predecimos
 prueba <- image_data_generator(rescale = 1/255)
@@ -313,4 +320,7 @@ prediccion<-as.tibble(prediccion) %>%
   rename(probabilidad = V1) %>%
   mutate(indice = 1:nrow(prediccion))
 prediccion<-prediccion[c(2,1)]
-write.csv(prediccion,"2018-10-17_prediccion_1.csv",row.names=F)
+write.csv(prediccion,paste0(carpeta,"/prediccion_1.csv"),row.names=F)
+
+# Guardamos gráfica de épocas
+ggsave(paste0(carpeta,"/plot_1.jpeg"),plot(ajuste),scale=1.5)

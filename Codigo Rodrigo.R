@@ -223,8 +223,7 @@ rm(list=ls())
 
 ############## Primer intento, 17-Oct ############## 
 
-#carpeta<-paste0("Bases/",Sys.Date())
-carpeta<-paste0("Bases/","2018-10-17")
+carpeta<-paste0("Bases/",Sys.Date())
 dir.create(carpeta)
 
 # Preprocesamiento de imagenes #
@@ -248,7 +247,7 @@ gen_minilote_entrena <-
                              batch_size = 32,
                              class_mode = "binary",
                              classes = c("perro", "gato"),
-                             shuffle = TRUE,
+                             shuffle = T,
                              seed = 42711)
 gen_valida <- 
   flow_images_from_directory('validation/', 
@@ -275,13 +274,13 @@ indices <- gen_minilote_entrena$class_indices
 # Red simple
 modelo <- keras_model_sequential()
 modelo %>% 
-  layer_conv_2d(filter = 16, kernel_size = c(3,3), 
+  layer_conv_2d(filter = 32, kernel_size = c(3,3),  # Aumentamos el numero de filtros en segunda capa
                 input_shape = c(ancho, alto, 3), # Cambiamos 1 por 3 porque son 3 colores
                 activation = "relu") %>%
   layer_max_pooling_2d(pool_size = c(2,2)) %>%
   layer_dropout(0.2) %>% 
   layer_flatten() %>%
-  layer_dense(units = 50, activation="relu") %>% 
+  layer_dense(units = 60, activation="relu") %>% # Aumentamos el número de variables en la cuarta capa
   layer_dropout(0.2) %>% 
   layer_dense(units = 1, activation = "sigmoid") 
 
@@ -293,14 +292,17 @@ modelo %>% compile(
   metrics = "accuracy"
 )
 
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+
 ajuste <- modelo %>% fit_generator(
   gen_minilote_entrena,
   validation_data = gen_valida,
   validation_steps = n_valida / 500,
   steps_per_epoch = n_entrena / 32, # entre tamaño de minibatch 
   workers = 4,
-  epochs = 40, #aumentamos épocas
-  verbose = 1)
+  epochs = 40, # Incrementamos épocas
+  verbose = 1,
+  callbacks = list(early_stop))
 
 # Exporta métricas
 write.csv(as.data.frame(ajuste$metrics),paste0(carpeta,"/metricas_1.csv"),row.names=F)
@@ -312,15 +314,21 @@ gen_prueba <-
                              prueba,
                              target_size = tamaño,
                              batch_size = 1,
-                             class_mode = "binary",
                              shuffle = F)
 
-prediccion <- modelo %>% predict_generator(gen_prueba, step = 6887, verbose = 1)
-prediccion<-as.tibble(prediccion) %>%
-  rename(probabilidad = V1) %>%
-  mutate(indice = 1:nrow(prediccion))
-prediccion<-prediccion[c(2,1)]
-write.csv(prediccion,paste0(carpeta,"/prediccion_1.csv"),row.names=F)
+prediccion<-data.frame(prediccion1=modelo %>% predict_generator(gen_prueba, step = 6887, verbose = 1,workers=1))
+for(i in 1:5){
+  gen_prueba <- 
+    flow_images_from_directory('test/', 
+                               prueba,
+                               target_size = tamaño,
+                               batch_size = 1,
+                               shuffle = F)
+  aux<-modelo %>% predict_generator(gen_prueba, step = 6887, verbose = 1,workers=1)
+  prediccion<-cbind(prediccion,aux)
+  names(prediccion)[i]<-paste0("prediccion",i)
+}
+write.csv(prediccion,paste0(carpeta,"/prediccion_2.csv"),row.names=F)
 
 # Guardamos gráfica de épocas
 ggsave(paste0(carpeta,"/plot_1.jpeg"),plot(ajuste),scale=1.5)

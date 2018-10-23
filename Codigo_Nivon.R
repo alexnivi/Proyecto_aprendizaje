@@ -145,24 +145,23 @@ ggsave(paste0(carpeta,"/plot_1-1.jpeg"),plot(ajuste),scale=1.5)
 
 
 modelo_2%>%
-  layer_conv_2d(filters = 8, kernel_size = c(5,5), 
+  layer_conv_2d(filters = 32, kernel_size = c(5,5), 
                 activation = 'relu',
                 input_shape = c(ancho, alto, 3), 
                 padding ='same',
                 kernel_regularizer = regularizer_l2(lambda),
                 name = 'conv_1') %>%
-  layer_max_pooling_2d(pool_size = c(3, 3)) %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
   layer_dropout(rate = 0.25) %>% 
-  layer_conv_2d(filters = 12, kernel_size = c(3,3), 
-                activation = 'sigmoid',
+  layer_conv_2d(filters = 64, kernel_size = c(5,5), 
+                activation = 'relu',
                 kernel_regularizer = regularizer_l2(lambda),
                 name = 'conv_2') %>% 
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
   layer_dropout(rate = 0.25) %>% 
   layer_flatten() %>% 
-  layer_dense(units = 50, activation = 'selu',
+  layer_dense(units = 1024, activation = 'relu',
               kernel_regularizer = regularizer_l2(lambda)) %>%
-  layer_dropout(rate = 0.5) %>%
   layer_dense(units = 1, activation = "sigmoid")
 
 modelo_2 %>% compile(
@@ -220,24 +219,42 @@ ggsave(paste0(carpeta,"/plot_2-2.jpeg"),plot(ajuste),scale=1.5)
 
 
 modelo_3%>%
-  layer_conv_2d(filters = 8, kernel_size = c(5,5), 
+  layer_conv_2d(filters = 32, kernel_size = c(5,5), 
                 activation = 'relu',
                 input_shape = c(ancho, alto, 3), 
                 padding ='same',
                 kernel_regularizer = regularizer_l2(lambda),
                 name = 'conv_1') %>%
-  layer_max_pooling_2d(pool_size = c(3, 3)) %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
   layer_dropout(rate = 0.25) %>% 
-  layer_conv_2d(filters = 12, kernel_size = c(3,3), 
-                activation = 'sigmoid',
+  layer_conv_2d(filters = 64, kernel_size = c(5,5), 
+                activation = 'relu',
                 kernel_regularizer = regularizer_l2(lambda),
                 name = 'conv_2') %>% 
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
   layer_dropout(rate = 0.25) %>% 
+  layer_conv_2d(filters = 128, kernel_size = c(5,5), 
+                activation = 'relu',
+                kernel_regularizer = regularizer_l2(lambda),
+                name = 'conv_3') %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_dropout(rate = 0.25) %>% 
+  layer_conv_2d(filters = 64, kernel_size = c(5,5), 
+                activation = 'relu',
+                kernel_regularizer = regularizer_l2(lambda),
+                name = 'conv_4') %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_dropout(rate = 0.25) %>% 
   layer_flatten() %>% 
-  layer_dense(units = 50, activation = 'selu',
+  layer_conv_2d(filters = 32, kernel_size = c(5,5), 
+                activation = 'relu',
+                kernel_regularizer = regularizer_l2(lambda),
+                name = 'conv_5') %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_dropout(rate = 0.25) %>% 
+  layer_dense(units = 1024, activation = 'relu',
               kernel_regularizer = regularizer_l2(lambda)) %>%
-  layer_dropout(rate = 0.5) %>%
+  layer_dropout(rate = 0.8) %>% 
   layer_dense(units = 1, activation = "sigmoid")
 
 modelo_3 %>% compile(

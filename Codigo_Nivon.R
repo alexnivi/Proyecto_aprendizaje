@@ -98,7 +98,7 @@ modelo_1 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005, patience = 10,verbose=1)
 
 ajuste <- modelo_1 %>% fit_generator(
   gen_minilote_entrena,
@@ -172,7 +172,7 @@ modelo_2 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
 
 ajuste <- modelo_2 %>% fit_generator(
   gen_minilote_entrena,
@@ -265,7 +265,7 @@ modelo_3 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
 
 ajuste <- modelo_3 %>% fit_generator(
   gen_minilote_entrena,
@@ -329,7 +329,7 @@ modelo_4 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
 
 ajuste <- modelo_4 %>% fit_generator(
   gen_minilote_entrena,
@@ -402,7 +402,7 @@ modelo_3 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
 
 ajuste <- modelo_3 %>% fit_generator(
   gen_minilote_entrena,
@@ -481,7 +481,7 @@ modelo_6 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
 
 ajuste <- modelo_6 %>% fit_generator(
   gen_minilote_entrena,
@@ -560,7 +560,7 @@ modelo_7 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
 
 ajuste <- modelo_7 %>% fit_generator(
   gen_minilote_entrena,
@@ -639,7 +639,7 @@ modelo_8 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
 
 ajuste <- modelo_8 %>% fit_generator(
   gen_minilote_entrena,
@@ -693,7 +693,7 @@ modelo_9%>%
                 padding ='same',
                 kernel_regularizer = regularizer_l2(lambda),
                 name = 'conv_1') %>%
-  layer_max_pooling_2d(filters = 12, kernel_size = c(5,5), 
+  layer_max_pooling_2d(kernel_size = c(5,5), 
                 activation = 'sigmoid',
                 kernel_regularizer = regularizer_l2(lambda),
                 name = 'conv_2') %>% 
@@ -721,7 +721,7 @@ modelo_9 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
 
 ajuste <- modelo_9 %>% fit_generator(
   gen_minilote_entrena,
@@ -800,7 +800,7 @@ modelo_10 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 5,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
 
 ajuste <- modelo_10 %>% fit_generator(
   gen_minilote_entrena,

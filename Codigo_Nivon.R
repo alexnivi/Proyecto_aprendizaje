@@ -2,7 +2,7 @@ library(tidyverse)
 library(keras)
 
 # Declaramos workspace
-setwd("~/Documents/maestría/Proyecto_aprendizaje")
+#setwd("~/Documents/maestría/Proyecto_aprendizaje")
 rm(list=ls())
 
 
@@ -69,6 +69,7 @@ modelo_9 <- keras_model_sequential()
 modelo_10 <- keras_model_sequential()
 
 
+
 modelo_1%>%
   layer_conv_2d(filters = 8, kernel_size = c(5,5), 
                 activation = 'relu',
@@ -77,13 +78,13 @@ modelo_1%>%
                 kernel_regularizer = regularizer_l2(lambda),
                 name = 'conv_1') %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
-  layer_dropout(rate = 0.25) %>% 
+  layer_dropout(rate = 0.4) %>% 
   layer_conv_2d(filters = 12, kernel_size = c(3,3), 
                 activation = 'relu',
                 kernel_regularizer = regularizer_l2(lambda),
                 name = 'conv_2') %>% 
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
-  layer_dropout(rate = 0.25) %>% 
+  layer_dropout(rate = 0.4) %>% 
   layer_flatten() %>% 
   layer_dense(units = 50, activation = 'relu',
               kernel_regularizer = regularizer_l2(lambda)) %>%
@@ -106,7 +107,7 @@ ajuste <- modelo_1 %>% fit_generator(
   validation_steps = n_valida / 500,
   steps_per_epoch = n_entrena / 32, # entre tamaño de minibatch 
   workers = 4,
-  epochs = 40 , # Incrementamos épocas
+  epochs = 45 , # Incrementamos épocas
   verbose = 1,
   callbacks = list(early_stop))
 
@@ -150,18 +151,25 @@ modelo_2%>%
                 input_shape = c(ancho, alto, 3), 
                 padding ='same',
                 kernel_regularizer = regularizer_l2(lambda),
-                name = 'conv_1') %>%
+                name = 'conv_12') %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
   layer_dropout(rate = 0.25) %>% 
   layer_conv_2d(filters = 64, kernel_size = c(5,5), 
                 activation = 'relu',
                 kernel_regularizer = regularizer_l2(lambda),
-                name = 'conv_2') %>% 
+                name = 'conv_22') %>% 
   layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
   layer_dropout(rate = 0.25) %>% 
+  #layer_conv_2d(filters = 128, kernel_size = c(5,5), 
+  #              activation = 'relu',
+  #              kernel_regularizer = regularizer_l2(lambda),
+  #              name = 'conv_32') %>% 
+  #layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  #layer_dropout(rate = 0.35) %>% 
   layer_flatten() %>% 
   layer_dense(units = 1024, activation = 'relu',
               kernel_regularizer = regularizer_l2(lambda)) %>%
+  layer_dropout(rate = 0.35) %>%
   layer_dense(units = 1, activation = "sigmoid")
 
 modelo_2 %>% compile(
@@ -180,7 +188,7 @@ ajuste <- modelo_2 %>% fit_generator(
   validation_steps = n_valida / 500,
   steps_per_epoch = n_entrena / 32, # entre tamaño de minibatch 
   workers = 4,
-  epochs = 40 , # Incrementamos épocas
+  epochs = 55 , # Incrementamos épocas
   verbose = 1,
   callbacks = list(early_stop))
 
@@ -237,24 +245,24 @@ modelo_3%>%
                 activation = 'relu',
                 kernel_regularizer = regularizer_l2(lambda),
                 name = 'conv_3') %>% 
-  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_max_pooling_2d(pool_size = c(1, 1)) %>% 
   layer_dropout(rate = 0.25) %>% 
-  layer_conv_2d(filters = 64, kernel_size = c(5,5), 
-                activation = 'relu',
-                kernel_regularizer = regularizer_l2(lambda),
-                name = 'conv_4') %>% 
-  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
-  layer_dropout(rate = 0.25) %>% 
-  layer_flatten() %>% 
-  layer_conv_2d(filters = 32, kernel_size = c(5,5), 
-                activation = 'relu',
-                kernel_regularizer = regularizer_l2(lambda),
-                name = 'conv_5') %>% 
-  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
-  layer_dropout(rate = 0.25) %>% 
+  layer_conv_2d(filters = 64, kernel_size = c(5,5),
+                 activation = 'relu',
+                 kernel_regularizer = regularizer_l2(lambda),
+                 name = 'conv_4') %>%
+   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+   layer_dropout(rate = 0.35) %>%
+  # layer_conv_2d(filters = 32, kernel_size = c(5,5),
+  #               activation = 'relu',
+  #               kernel_regularizer = regularizer_l2(lambda),
+  #               name = 'conv_5') %>%
+  # layer_max_pooling_2d(pool_size = c(1)) %>%
+  # layer_dropout(rate = 0.25) %>%
+  layer_flatten() %>%
   layer_dense(units = 1024, activation = 'relu',
               kernel_regularizer = regularizer_l2(lambda)) %>%
-  layer_dropout(rate = 0.8) %>% 
+  layer_dropout(rate = 0.8) %>%
   layer_dense(units = 1, activation = "sigmoid")
 
 modelo_3 %>% compile(
@@ -265,7 +273,7 @@ modelo_3 %>% compile(
   metrics = "accuracy"
 )
 
-early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.005,patience = 10,verbose=1)
+early_stop <- callback_early_stopping(monitor = "val_loss",min_delta=0.001,patience = 10,verbose=1)
 
 ajuste <- modelo_3 %>% fit_generator(
   gen_minilote_entrena,
@@ -371,6 +379,26 @@ write.csv(prediccion,paste0(carpeta,"/prediccion_4-4.csv"),row.names=F)
 ggsave(paste0(carpeta,"/plot_4-4.jpeg"),plot(ajuste),scale=1.5)
 
 
+#####################################################################################
+model_2_anterior <- modelo_2%>%
+  layer_conv_2d(filters = 32, kernel_size = c(5,5), 
+                activation = 'relu',
+                input_shape = c(ancho, alto, 3), 
+                padding ='same',
+                kernel_regularizer = regularizer_l2(lambda),
+                name = 'conv_12') %>%
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_dropout(rate = 0.25) %>% 
+  layer_conv_2d(filters = 64, kernel_size = c(5,5), 
+                activation = 'relu',
+                kernel_regularizer = regularizer_l2(lambda),
+                name = 'conv_22') %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_dropout(rate = 0.25) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 1024, activation = 'relu',
+              kernel_regularizer = regularizer_l2(lambda)) %>%
+  layer_dense(units = 1, activation = "sigmoid")
 
 
 modelo_5%>%
